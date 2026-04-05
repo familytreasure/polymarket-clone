@@ -2,9 +2,21 @@ import { notFound } from 'next/navigation';
 import { fetchEventById, fetchEvents } from '@/lib/api';
 import { EventDetailClient } from '@/components/EventDetailClient';
 import { BackLink } from '@/components/BackLink';
+import { MOCK_EVENTS } from '@/mock/data';
 
 interface Props {
   params: Promise<{ id: string }>;
+}
+
+export async function generateStaticParams() {
+  const apiEvents = await fetchEvents(50).catch(() => []);
+  const allIds = new Set([
+    ...MOCK_EVENTS.map((e) => e.id),
+    ...MOCK_EVENTS.map((e) => e.slug),
+    ...apiEvents.map((e) => e.id),
+    ...apiEvents.map((e) => e.slug),
+  ]);
+  return Array.from(allIds).map((id) => ({ id }));
 }
 
 export default async function EventPage({ params }: Props) {
