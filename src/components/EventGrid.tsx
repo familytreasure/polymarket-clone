@@ -163,10 +163,10 @@ export function EventGrid({ events }: Props) {
       )}
 
       {/* Sort bar + Live toggle */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
         <button
           onClick={() => setShowLiveOnly(!showLiveOnly)}
-          className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+          className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium transition-all cursor-pointer shrink-0 ${
             showLiveOnly
               ? 'bg-pm-red/15 border border-pm-red/30 text-pm-red'
               : 'text-pm-muted hover:text-pm-text'
@@ -175,14 +175,14 @@ export function EventGrid({ events }: Props) {
           <span className={`w-1.5 h-1.5 rounded-full ${showLiveOnly ? 'bg-pm-red animate-pulse' : 'bg-pm-muted/50'}`} />
           Live
         </button>
-        <span className="text-pm-border">|</span>
-        <span className="text-xs text-pm-muted">Sort:</span>
-        <div className="flex gap-1">
+        <span className="text-pm-border shrink-0">|</span>
+        <span className="text-xs text-pm-muted shrink-0">Sort:</span>
+        <div className="flex gap-1 shrink-0">
           {SORT_OPTIONS.map(({ label, key }) => (
             <button
               key={key}
               onClick={() => setActiveSort(key)}
-              className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
+              className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer whitespace-nowrap ${
                 activeSort === key
                   ? 'bg-pm-card border border-pm-border text-pm-text'
                   : 'text-pm-muted hover:text-pm-text'
@@ -192,7 +192,7 @@ export function EventGrid({ events }: Props) {
             </button>
           ))}
         </div>
-        <span className="ml-auto text-xs text-pm-muted">
+        <span className="ml-auto text-xs text-pm-muted shrink-0">
           {filtered.length} event{filtered.length !== 1 ? 's' : ''}
         </span>
       </div>

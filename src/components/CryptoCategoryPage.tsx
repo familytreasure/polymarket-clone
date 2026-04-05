@@ -141,7 +141,7 @@ export function CryptoCategoryPage({ events }: Props) {
   );
 
   return (
-    <div className="flex gap-6">
+    <div className="flex flex-col lg:flex-row gap-6">
       {/* Sidebar */}
       <Sidebar sections={sidebarSections} activeKey={activeAsset} onSelect={setActiveAsset} />
 

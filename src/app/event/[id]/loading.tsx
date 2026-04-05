@@ -2,7 +2,7 @@ import { MarketRowSkeleton } from '@/components/LoadingSkeleton';
 
 export default function EventLoading() {
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8 flex flex-col gap-6">
+    <div className="max-w-6xl mx-auto px-4 py-8 flex flex-col gap-6">
       <div className="h-4 bg-pm-border rounded w-24" style={{ animation: 'pulse-soft 2s ease-in-out infinite' }} />
       <div className="flex flex-col gap-2">
         <div className="h-7 bg-pm-border rounded w-3/4" style={{ animation: 'pulse-soft 2s ease-in-out infinite' }} />

@@ -25,7 +25,7 @@ export function SearchBar() {
   }, [handleKeyDown]);
 
   return (
-    <div className={`relative flex items-center flex-1 max-w-md transition-all duration-200 ${focused ? 'max-w-lg' : ''}`}>
+    <div className={`relative flex items-center w-full md:flex-1 md:max-w-md transition-all duration-200 ${focused ? 'md:max-w-lg' : ''}`}>
       <svg
         className="absolute left-3 w-4 h-4 text-pm-muted pointer-events-none"
         fill="none"

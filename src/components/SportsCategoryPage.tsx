@@ -233,7 +233,7 @@ export function SportsCategoryPage({ events }: Props) {
   }, [events, activeSport, activeSort, searchQuery]);
 
   return (
-    <div className="flex gap-6">
+    <div className="flex flex-col lg:flex-row gap-6">
       {/* Sidebar */}
       <Sidebar sections={sidebarSections} activeKey={activeSport} onSelect={setActiveSport} />
 

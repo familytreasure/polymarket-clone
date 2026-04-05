@@ -9,7 +9,7 @@ export default function CryptoLoading() {
         <div className="h-4 bg-pm-border rounded w-52" style={{ animation: 'pulse-soft 2s ease-in-out infinite' }} />
       </div>
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         {Array.from({ length: 3 }).map((_, i) => (
           <div key={i} className="h-16 bg-pm-card border border-pm-border rounded-xl" style={{ animation: 'pulse-soft 2s ease-in-out infinite' }} />
         ))}

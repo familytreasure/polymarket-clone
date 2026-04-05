@@ -28,7 +28,7 @@ function MarketRowInner({ market }: Props) {
       <ProbabilityBar prices={prices} outcomes={market.outcomes} />
 
       {/* Outcome buttons */}
-      <div className="flex gap-3">
+      <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
         {market.outcomes.map((outcome, i) => {
           const price = i === 0 ? yesPrice : noPrice;
           const isYes = i === 0;

@@ -56,3 +56,9 @@ body {
 
 .flash-green { animation: var(--animate-flash-green); }
 .flash-red { animation: var(--animate-flash-red); }
+
+@media (max-width: 640px) {
+  button, a { -webkit-tap-highlight-color: transparent; }
+}
+
+[style*="scrollbar-width: none"]::-webkit-scrollbar { display: none; }
