@@ -32,11 +32,11 @@ export default function RootLayout({
                 <div className="hidden md:block flex-1">
                   <SearchBar />
                 </div>
-                <div className="flex items-center gap-2 sm:gap-3 shrink-0 ml-auto">
+                <div className="hidden sm:flex items-center gap-3 shrink-0 ml-auto">
                   <button className="text-sm text-pm-muted hover:text-pm-text transition-colors cursor-pointer">
                     Log in
                   </button>
-                  <button className="text-sm bg-pm-blue hover:bg-pm-blue/90 text-white px-3 sm:px-4 py-1.5 rounded-lg font-medium transition-colors cursor-pointer">
+                  <button className="text-sm bg-pm-blue hover:bg-pm-blue/90 text-white px-4 py-1.5 rounded-lg font-medium transition-colors cursor-pointer">
                     Sign up
                   </button>
                 </div>

@@ -10,22 +10,29 @@ import { MarketRow } from './MarketRow';
 import { PriceChart } from './PriceChart';
 import { TradeSlip } from './TradeSlip';
 import { formatVolume } from '@/lib/utils';
-import type { PolyEvent } from '@/lib/types';
+import type { Market, PolyEvent } from '@/lib/types';
 
 interface Props {
   event: PolyEvent;
   relatedEvents?: PolyEvent[];
 }
 
-function MobileTradeBar({ event }: { event: PolyEvent }) {
+function MobileTradeBar({
+  market,
+  outcomeIndex,
+  onDismiss,
+}: {
+  market: Market;
+  outcomeIndex: number;
+  onDismiss: () => void;
+}) {
   const [open, setOpen] = useState(false);
-  const primaryMarket = event.markets[0];
-  const prices = useAtomValue(marketPriceFamily(primaryMarket?.id ?? ''));
+  const prices = useAtomValue(marketPriceFamily(market.id));
 
-  if (!primaryMarket) return null;
-
-  const yesPrice = prices[0] ?? 0.5;
-  const isBullish = yesPrice >= 0.5;
+  const price = prices[outcomeIndex] ?? 0.5;
+  const isYes = outcomeIndex === 0;
+  const colorClass = isYes ? 'text-pm-green' : 'text-pm-red';
+  const outcomeLabel = market.outcomes[outcomeIndex] ?? (isYes ? 'Yes' : 'No');
 
   return (
     <>
@@ -36,18 +43,27 @@ function MobileTradeBar({ event }: { event: PolyEvent }) {
       {open && (
         <div className="fixed bottom-0 left-0 right-0 z-50 bg-pm-bg border-t border-pm-border rounded-t-2xl p-4 pb-[env(safe-area-inset-bottom,16px)] lg:hidden max-h-[85vh] overflow-y-auto">
           <div className="w-10 h-1 bg-pm-border rounded-full mx-auto mb-4" />
-          <TradeSlip market={primaryMarket} />
+          <TradeSlip market={market} />
         </div>
       )}
 
       <div className="fixed bottom-0 left-0 right-0 z-30 bg-pm-bg/95 backdrop-blur-sm border-t border-pm-border px-4 py-3 pb-[env(safe-area-inset-bottom,12px)] lg:hidden">
         <div className="flex items-center justify-between gap-3">
+          <button
+            onClick={onDismiss}
+            className="text-pm-muted hover:text-pm-text p-1 -ml-1 transition-colors cursor-pointer"
+            aria-label="Dismiss trade bar"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 4L4 12M4 4l8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+          </button>
           <div className="flex items-center gap-3 min-w-0">
-            <span className={`text-lg font-bold tabular-nums ${isBullish ? 'text-pm-green' : 'text-pm-red'}`}>
-              {Math.round(yesPrice * 100)}¢
+            <span className={`text-lg font-bold tabular-nums ${colorClass}`}>
+              {Math.round(price * 100)}¢
             </span>
             <span className="text-xs text-pm-muted truncate">
-              {primaryMarket.outcomes[0] ?? 'Yes'}
+              {outcomeLabel}
             </span>
           </div>
           <button
@@ -66,11 +82,24 @@ export function EventDetailClient({ event, relatedEvents }: Props) {
   useHydratePrices(event.markets);
   useWebSocket(event.markets.map((m) => m.id));
 
-  const primaryMarket = event.markets[0];
+  const [selectedMarketId, setSelectedMarketId] = useState<string | null>(
+    event.markets[0]?.id ?? null,
+  );
+  const [selectedOutcomeIndex, setSelectedOutcomeIndex] = useState(0);
+  const [tradeBarVisible, setTradeBarVisible] = useState(true);
+
+  const selectedMarket =
+    event.markets.find((m) => m.id === selectedMarketId) ?? event.markets[0];
+
+  const handleSelectOutcome = (market: Market, outcomeIndex: number) => {
+    setSelectedMarketId(market.id);
+    setSelectedOutcomeIndex(outcomeIndex);
+    setTradeBarVisible(true);
+  };
 
   return (
     <>
-      <div className="flex flex-col lg:flex-row gap-6 pb-20 lg:pb-0">
+      <div className={`flex flex-col lg:flex-row gap-6 lg:pb-0 ${tradeBarVisible ? 'pb-20' : 'pb-4'}`}>
         {/* Main content */}
         <div className="flex-1 flex flex-col gap-6 min-w-0">
           {/* Event header */}
@@ -109,10 +138,10 @@ export function EventDetailClient({ event, relatedEvents }: Props) {
           </div>
 
           {/* Price chart */}
-          {primaryMarket && (
+          {selectedMarket && (
             <PriceChart
-              marketId={primaryMarket.id}
-              basePrice={primaryMarket.outcomePrices[0] ?? 0.5}
+              marketId={selectedMarket.id}
+              basePrice={selectedMarket.outcomePrices[0] ?? 0.5}
               height={160}
             />
           )}
@@ -123,7 +152,13 @@ export function EventDetailClient({ event, relatedEvents }: Props) {
               Outcomes ({event.markets.length})
             </h2>
             {event.markets.map((market) => (
-              <MarketRow key={market.id} market={market} />
+              <MarketRow
+                key={market.id}
+                market={market}
+                selected={market.id === selectedMarketId}
+                selectedOutcome={market.id === selectedMarketId ? selectedOutcomeIndex : undefined}
+                onSelectOutcome={handleSelectOutcome}
+              />
             ))}
           </div>
 
@@ -157,15 +192,21 @@ export function EventDetailClient({ event, relatedEvents }: Props) {
         </div>
 
         {/* Trade slip sidebar - desktop only */}
-        {primaryMarket && (
+        {selectedMarket && (
           <div className="hidden lg:block w-80 shrink-0">
-            <TradeSlip market={primaryMarket} />
+            <TradeSlip market={selectedMarket} />
           </div>
         )}
       </div>
 
       {/* Mobile trade bar */}
-      {primaryMarket && <MobileTradeBar event={event} />}
+      {selectedMarket && tradeBarVisible && (
+        <MobileTradeBar
+          market={selectedMarket}
+          outcomeIndex={selectedOutcomeIndex}
+          onDismiss={() => setTradeBarVisible(false)}
+        />
+      )}
     </>
   );
 }

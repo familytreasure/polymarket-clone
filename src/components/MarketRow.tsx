@@ -10,15 +10,24 @@ import type { Market } from '@/lib/types';
 
 interface Props {
   market: Market;
+  selected?: boolean;
+  selectedOutcome?: number;
+  onSelectOutcome?: (market: Market, outcomeIndex: number) => void;
 }
 
-function MarketRowInner({ market }: Props) {
+function MarketRowInner({ market, selected, selectedOutcome, onSelectOutcome }: Props) {
   const prices = useAtomValue(marketPriceFamily(market.id));
   const yesPrice = prices[0] ?? 0.5;
   const noPrice = prices[1] ?? 0.5;
 
   return (
-    <div className="border border-pm-border rounded-xl p-5 flex flex-col gap-4 bg-pm-card hover:bg-pm-card-hover transition-colors">
+    <div
+      className={`border rounded-xl p-5 flex flex-col gap-4 bg-pm-card transition-colors ${
+        selected
+          ? 'border-pm-blue/50 ring-1 ring-pm-blue/30'
+          : 'border-pm-border hover:bg-pm-card-hover'
+      }`}
+    >
       {/* Question */}
       <p className="text-sm font-medium text-pm-text leading-snug">
         {market.question}
@@ -30,18 +39,24 @@ function MarketRowInner({ market }: Props) {
       {/* Outcome buttons */}
       <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
         {market.outcomes.map((outcome, i) => {
-          const price = i === 0 ? yesPrice : noPrice;
           const isYes = i === 0;
+          const isActive = selected && selectedOutcome === i;
           return (
             <button
               key={outcome}
+              type="button"
+              onClick={() => onSelectOutcome?.(market, i)}
               className={`
                 flex-1 flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-semibold
-                border transition-all duration-200 cursor-default
+                border-2 transition-all duration-200 cursor-pointer
                 ${
-                  isYes
-                    ? 'border-pm-green/30 bg-pm-green/10 text-pm-green hover:bg-pm-green/20'
-                    : 'border-pm-red/30 bg-pm-red/10 text-pm-red hover:bg-pm-red/20'
+                  isActive
+                    ? isYes
+                      ? 'border-pm-green bg-pm-green/20 text-pm-green'
+                      : 'border-pm-red bg-pm-red/20 text-pm-red'
+                    : isYes
+                      ? 'border-pm-green/30 bg-pm-green/10 text-pm-green hover:bg-pm-green/20'
+                      : 'border-pm-red/30 bg-pm-red/10 text-pm-red hover:bg-pm-red/20'
                 }
               `}
             >
